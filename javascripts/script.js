@@ -84,7 +84,7 @@
     .attr('class', 'chart__range-selection')
     .attr('transform', 'translate(110, 0)');
 
-  d3.csv('/data/aapl.csv', type, function(err, data) {
+  d3.csv('/d3-stock/data/aapl.csv', type, function(err, data) {
     var brush = d3.svg.brush()
       .x(x2)
       .on('brush', brushed);
