@@ -77,7 +77,7 @@
 
   legend.append('text')
     .attr('class', 'chart__symbol')
-    .text('NASDAQ: GOOGL')
+    .text('NASDAQ: AAPL')
 
   var rangeSelection =  legend
     .append('g')
