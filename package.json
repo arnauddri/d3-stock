@@ -1,0 +1,26 @@
+{
+  "name": "d3",
+  "description": "A stock chart in d3js",
+  "version": "0.0.1",
+  "author": "Your Name",
+  "license": "MIT Expat",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "keywords": [
+    "d3.js",
+    "visualization",
+    "svg"
+  ],
+  "d3.chart": {
+    "version": "0.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "watch": "stylus -w src/style.styl src/style.css"
+  },
+  "dependencies": {
+    "stylus": "^0.49.3"
+  }
+}

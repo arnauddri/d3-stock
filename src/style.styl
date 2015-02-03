@@ -1,0 +1,85 @@
+.chart__grid
+  stroke #e7eef4
+  opacity 0.3
+
+svg
+  font 10px sans-serif
+
+.area
+  fill rgba(255,100,100,0.5)
+  clip-path url("#clip")
+
+.axis path,
+.axis line
+  fill none
+  stroke #e7eef4
+  shape-rendering crispEdges
+
+.brush .extent
+  stroke #fff
+  fill-opacity 0.125
+  shape-rendering crispEdges
+
+
+/*New*/
+.chart
+  text
+    fill #7F8FAF
+  &__line
+    fill none
+    stroke-width 1.2px
+    clip-path url("#clip")
+  &__price--focus
+    stroke-width 2px
+    stroke #2980b9
+  &__average--focus
+    stroke-width 2px
+    stroke red
+    opacity 0.3
+  &__overlay
+    opacity 0
+    pointer-events: all
+  &__tooltip--price
+    fill none
+    stroke red
+  &__tooltip--average
+    fill none
+    stroke red
+  &__bars
+    fill #99C5DF
+    opacity 1
+  &__range-selection
+    text
+      cursor pointer
+      text-decoration underline
+      fill #2980B9
+
+
+.chart__axis--context
+  text
+    fill #7F8FAF
+.chart__axis--context .tick:nth-child(odd)
+  display: none
+
+.chart__axis--context path,
+.chart__axis--context line
+  display: none
+
+.chart__area
+  fill: #E6F6FE
+  stroke: #3587BC
+
+.extent
+  fill: #E2F0FF
+  fill: #3587BC
+  fill-opacity: 0.3
+
+.y.axis
+  .tick
+    text
+      text-anchor start !important
+      fill #7F8FAF
+    line
+      display none
+  path
+    display none
