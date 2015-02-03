@@ -1,0 +1,1 @@
+{"name":"D3-stock","tagline":"","body":"### d3-Stock\r\n\r\nA Stock price visualization using d3.js.\r\n\r\nSee, all in one chart, with multiple time spans (1wk, 1mth, 6mths, 1yr, 5yr):\r\n* actual stock prices\r\n* a mobile average\r\n* trading volumes","google":"","note":"Don't delete this file! It's used internally to help with page regeneration."}
