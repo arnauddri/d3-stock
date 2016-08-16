@@ -52,7 +52,7 @@ svg {
 }
 .chart__bars {
   fill: #99c5df;
-  opacity: 1;
+  opacity: 1.0;
 }
 .chart__range-selection text {
   cursor: pointer;

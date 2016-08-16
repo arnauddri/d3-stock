@@ -7,33 +7,34 @@
     height   = 283 - margin.top - margin.bottom,
     height2  = 283 - margin2.top - margin2.bottom;
 
-  var parseDate = d3.time.format('%d/%m/%Y').parse,
+  var parseDate = d3.timeParse('%d/%m/%Y'),
     bisectDate = d3.bisector(function(d) { return d.date; }).left,
-    legendFormat = d3.time.format('%b %d, %Y');
+    legendFormat = d3.timeFormat('%b %d, %Y');
 
-  var x = d3.time.scale().range([0, width]),
-    x2  = d3.time.scale().range([0, width]),
-    y   = d3.scale.linear().range([height, 0]),
-    y1  = d3.scale.linear().range([height, 0]),
-    y2  = d3.scale.linear().range([height2, 0]),
-    y3  = d3.scale.linear().range([60, 0]);
+  var x = d3.scaleTime().range([0, width]),
+    x2  = d3.scaleTime().range([0, width]),
+    y   = d3.scaleLinear().range([height, 0]),
+    y1  = d3.scaleLinear().range([height, 0]),
+    y2  = d3.scaleLinear().range([height2, 0]),
+    y3  = d3.scaleLinear().range([60, 0]);
 
-  var xAxis = d3.svg.axis().scale(x).orient('bottom'),
-    xAxis2  = d3.svg.axis().scale(x2).orient('bottom'),
-    yAxis   = d3.svg.axis().scale(y).orient('left');
+  var xAxis = d3.axisBottom(x),
+    xAxis2  = d3.axisBottom(x2),
+    yAxis   = d3.axisLeft(y);
 
-  var priceLine = d3.svg.line()
-    .interpolate('monotone')
+  var priceLine = d3.area()
+    // .curve(d3.curveMonotoneX())
     .x(function(d) { return x(d.date); })
-    .y(function(d) { return y(d.price); });
+		.y0(height)
+    .y1(function(d) { return y(d.price); });
 
-  var avgLine = d3.svg.line()
-    .interpolate('monotone')
+  var avgLine = d3.line()
+    // .curve(d3.curveMonotoneX())
     .x(function(d) { return x(d.date); })
     .y(function(d) { return y(d.average); });
 
-  var area2 = d3.svg.area()
-    .interpolate('monotone')
+  var area2 = d3.area()
+    // .curve(d3.curveMonotoneX())
     .x(function(d) { return x2(d.date); })
     .y0(height2)
     .y1(function(d) { return y2(d.price); });
@@ -50,9 +51,7 @@
     .attr('height', height);
 
   var make_y_axis = function () {
-    return d3.svg.axis()
-      .scale(y)
-      .orient('left')
+    return d3.axisLeft(y)
       .ticks(3);
   };
 
@@ -84,10 +83,7 @@
     .attr('class', 'chart__range-selection')
     .attr('transform', 'translate(110, 0)');
 
-  d3.csv('./data/aapl.csv', type, function(err, data) {
-    var brush = d3.svg.brush()
-      .x(x2)
-      .on('brush', brushed);
+  d3.csv('https://raw.githubusercontent.com/arnauddri/d3-stock/master/src/data/aapl.csv', type, function(err, data) {
 
     var xRange = d3.extent(data.map(function(d) { return d.date; }));
 
@@ -118,7 +114,7 @@
 
     var priceChart = focus.append('path')
         .datum(data)
-        .attr('class', 'chart__line chart__price--focus line')
+        .attr('class', 'chart__area area chart__price--focus')
         .attr('d', priceLine);
 
     focus.append('g')
@@ -128,7 +124,7 @@
 
     focus.append('g')
         .attr('class', 'y axis')
-        .attr('transform', 'translate(12, 0)')
+        .attr('transform', 'translate(0, 0)')
         .call(yAxis);
 
     var focusGraph = barsGroup.selectAll('rect')
@@ -189,6 +185,10 @@
         .attr('transform', 'translate(0,' + (height2 - 22) + ')')
         .call(xAxis2);
 
+
+		var brush = d3.brushX().on('brush', brushed);
+      // .x(x2)
+
     context.append('g')
         .attr('class', 'x brush')
         .call(brush)
@@ -209,8 +209,8 @@
 
     function brushed() {
       var ext = brush.extent();
-      if (!brush.empty()) {
-        x.domain(brush.empty() ? x2.domain() : brush.extent());
+      if (ext) {
+        x.domain(ext ? x2.domain() : ext);
         y.domain([
           d3.min(data.map(function(d) { return (d.date >= ext[0] && d.date <= ext[1]) ? d.price : max; })),
           d3.max(data.map(function(d) { return (d.date >= ext[0] && d.date <= ext[1]) ? d.price : min; }))
