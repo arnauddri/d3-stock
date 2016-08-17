@@ -1,7 +1,7 @@
 /* global d3, _ */
 
 (function() {
-  var margin = {top: 30, right: 20, bottom: 100, left: 50},
+	var margin = {top: 30, right: 20, bottom: 100, left: 50},
     margin2  = {top: 210, right: 20, bottom: 20, left: 50},
     width    = 764 - margin.left - margin.right,
     height   = 283 - margin.top - margin.bottom,
@@ -14,7 +14,6 @@
   var x = d3.scaleTime().range([0, width]),
     x2  = d3.scaleTime().range([0, width]),
     y   = d3.scaleLinear().range([height, 0]),
-    y1  = d3.scaleLinear().range([height, 0]),
     y2  = d3.scaleLinear().range([height2, 0]),
     y3  = d3.scaleLinear().range([60, 0]);
 
@@ -23,18 +22,18 @@
     yAxis   = d3.axisLeft(y);
 
   var priceLine = d3.area()
-    // .curve(d3.curveMonotoneX())
+    .curve(d3.curveMonotoneX)
     .x(function(d) { return x(d.date); })
 		.y0(height)
     .y1(function(d) { return y(d.price); });
 
   var avgLine = d3.line()
-    // .curve(d3.curveMonotoneX())
+    .curve(d3.curveMonotoneX)
     .x(function(d) { return x(d.date); })
     .y(function(d) { return y(d.average); });
 
   var area2 = d3.area()
-    // .curve(d3.curveMonotoneX())
+    .curve(d3.curveMonotoneX)
     .x(function(d) { return x2(d.date); })
     .y0(height2)
     .y1(function(d) { return y2(d.price); });
@@ -107,15 +106,15 @@
         .tickSize(-width, 0, 0)
         .tickFormat(''));
 
-    var averageChart = focus.append('path')
-        .datum(data)
-        .attr('class', 'chart__line chart__average--focus line')
-        .attr('d', avgLine);
-
     var priceChart = focus.append('path')
         .datum(data)
         .attr('class', 'chart__area area chart__price--focus')
         .attr('d', priceLine);
+
+		var averageChart = focus.append('path')
+		    .datum(data)
+		    .attr('class', 'chart__line chart__average--focus line')
+		    .attr('d', avgLine);
 
     focus.append('g')
         .attr('class', 'x axis')
@@ -185,16 +184,11 @@
         .attr('transform', 'translate(0,' + (height2 - 22) + ')')
         .call(xAxis2);
 
-
-		var brush = d3.brushX().on('brush', brushed);
-      // .x(x2)
+		var brush = d3.brushX().extent([[0, 0], [width, height2]]).on('end', brushed);
 
     context.append('g')
         .attr('class', 'x brush')
-        .call(brush)
-      .selectAll('rect')
-        .attr('y', -6)
-        .attr('height', height2 + 7);
+        .call(brush);
 
     function mousemove() {
       var x0 = x.invert(d3.mouse(this)[0]);
@@ -208,25 +202,25 @@
     }
 
     function brushed() {
-      var ext = brush.extent();
-      if (ext) {
-        x.domain(ext ? x2.domain() : ext);
-        y.domain([
-          d3.min(data.map(function(d) { return (d.date >= ext[0] && d.date <= ext[1]) ? d.price : max; })),
-          d3.max(data.map(function(d) { return (d.date >= ext[0] && d.date <= ext[1]) ? d.price : min; }))
-        ]);
-        range.text(legendFormat(new Date(ext[0])) + ' - ' + legendFormat(new Date(ext[1])))
-        focusGraph.attr('x', function(d, i) { return x(d.date); });
+			var dateExtents = d3.event.selection || x2.range();
+			dateExtents = d3.event.selection.map(x2.invert, x2);
 
-        var days = Math.ceil((ext[1] - ext[0]) / (24 * 3600 * 1000))
-        focusGraph.attr('width', (40 > days) ? (40 - days) * 5 / 6 : 5)
-      }
+			x.domain(dateExtents);
+			y.domain([
+				d3.min(data.map(function(d) { return (d.date >= dateExtents[0] && d.date <= dateExtents[1]) ? d.price : max; })),
+				d3.max(data.map(function(d) { return (d.date >= dateExtents[0] && d.date <= dateExtents[1]) ? d.price : min; }))
+			]);
+			range.text(legendFormat(new Date(dateExtents[0])) + ' - ' + legendFormat(new Date(dateExtents[1])))
+			focusGraph.attr('x', function(d, i) { return x(d.date); });
 
-      priceChart.attr('d', priceLine);
-      averageChart.attr('d', avgLine);
-      focus.select('.x.axis').call(xAxis);
-      focus.select('.y.axis').call(yAxis);
-    }
+			var days = Math.ceil((dateExtents[1] - dateExtents[0]) / (24 * 3600 * 1000))
+			focusGraph.attr('width', (40 > days) ? (40 - days) * 5 / 6 : 5)
+
+			priceChart.attr('d', priceLine);
+			averageChart.attr('d', avgLine);
+			focus.select('.x.axis').call(xAxis);
+			focus.select('.y.axis').call(yAxis);
+		}
 
     var dateRange = ['1w', '1m', '3m', '6m', '1y', '5y']
     for (var i = 0, l = dateRange.length; i < l; i ++) {
@@ -240,8 +234,8 @@
     }
 
     function focusOnRange(range) {
-      var today = new Date(data[data.length - 1].date)
-      var ext = new Date(data[data.length - 1].date)
+      var today = new Date(data[data.length - 1].date);
+      var ext = new Date(data[data.length - 1].date);
 
       if (range === '1m')
         ext.setMonth(ext.getMonth() - 1)
@@ -261,9 +255,9 @@
       if (range === '5y')
         ext.setFullYear(ext.getFullYear() - 5)
 
-      brush.extent([ext, today])
-      brushed()
-      context.select('g.x.brush').call(brush.extent([ext, today]))
+			var newSelection = [ext, today].map(x2);
+			if(newSelection[0] < 0) newSelection[0] = 0;
+			context.select('.brush').call(brush.move, newSelection);
     }
 
   })// end Data
