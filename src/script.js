@@ -72,6 +72,25 @@
 	.attr('height', 30)
 	.attr('transform', 'translate(' + margin2.left + ', 10)');
 
+	var dateLegend = svg.append('g')
+	.attr('class', 'chart__dateLegend')
+	.attr('width', width)
+	.attr('height', 30)
+	.style('text-anchor', 'middle')
+	.style('display', 'none');
+
+	var dateLegendBackground = dateLegend.append('rect')
+	.attr('class', 'chart__dateLegendBackground')
+	.attr('width', 70)
+	.attr('height', 20)
+	.attr('x', -35)
+	.attr('y', -10)
+	.attr('rx', 10);
+
+	var dateLegendText = dateLegend.append('text')
+	.attr('class', 'chart__dateLegendText')
+	.attr('y', 3);
+
 	legend.append('text')
 	.attr('class', 'chart__symbol')
 	.text('NASDAQ: AAPL')
@@ -182,6 +201,7 @@
 		.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
 		.on('mouseover', function() {
 			helper.style('display', null);
+			dateLegend.style('display', null);
 			priceTooltip.style('display', null);
 			averageTooltip.style('display', null);
 			verticalPriceLine.style('display', null);
@@ -189,6 +209,7 @@
 		})
 		.on('mouseout', function() {
 			helper.style('display', 'none');
+			dateLegend.style('display', 'none');
 			priceTooltip.style('display', 'none');
 			averageTooltip.style('display', 'none');
 			verticalPriceLine.style('display', 'none');
@@ -220,6 +241,8 @@
 			var d1 = data[i];
 			var d = x0 - d0.date > d1.date - x0 ? d1 : d0;
 			helperText.text(legendFormat(new Date(d.date)) + ' - Price: ' + d.price + ' Avg: ' + d.average);
+			dateLegendText.text(legendFormat(new Date(d.date)));
+			dateLegend.attr('transform', 'translate(' + (x(d.date) + margin.left)  + ',' + (margin.top + height + 10) + ')');
 			priceTooltip.attr('transform', 'translate(' + x(d.date) + ',' + y(d.price) + ')');
 			averageTooltip.attr('transform', 'translate(' + x(d.date) + ',' + y(d.average) + ')');
 			verticalPriceLine.attr('transform', 'translate(' + x(d.date) + ', 0)');
