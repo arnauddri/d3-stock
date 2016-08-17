@@ -21,11 +21,10 @@
     xAxis2  = d3.axisBottom(x2),
     yAxis   = d3.axisLeft(y);
 
-  var priceLine = d3.area()
+  var priceLine = d3.line()
     .curve(d3.curveMonotoneX)
     .x(function(d) { return x(d.date); })
-		.y0(height)
-    .y1(function(d) { return y(d.price); });
+    .y(function(d) { return y(d.price); });
 
   var avgLine = d3.line()
     .curve(d3.curveMonotoneX)
@@ -108,7 +107,7 @@
 
     var priceChart = focus.append('path')
         .datum(data)
-        .attr('class', 'chart__area area chart__price--focus')
+        .attr('class', 'chart__line line chart__price--focus')
         .attr('d', priceLine);
 
 		var averageChart = focus.append('path')
