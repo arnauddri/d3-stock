@@ -24,6 +24,7 @@ svg {
 .chart text {
   fill: #7f8faf;
 }
+
 .chart__line {
   fill: none;
   stroke-width: 1.2px;
@@ -46,13 +47,28 @@ svg {
   fill: none;
   stroke: #f00;
 }
+
+.chart__tooltip--price-crosshairs {
+	stroke-width: 2;
+	stroke: black;
+	stroke-dasharray: 3, 1;
+}
+
+.chart__dateLegendBackground {
+	fill: lightgreen;
+}
+
+.chart__dateLegendText {
+	fill: white;
+}
+
 .chart__tooltip--average {
   fill: none;
   stroke: #f00;
 }
 .chart__bars {
   fill: #99c5df;
-  opacity: 1;
+  opacity: 1.0;
 }
 .chart__range-selection text {
   cursor: pointer;
